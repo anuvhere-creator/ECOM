@@ -15,7 +15,11 @@
   border-radius: 8px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
-
+.error-text{
+  color: red;
+  margin-top: 10px;
+  font-size: 14px;
+}
 .loginsignup-container h1 {
   margin: 20px 0px;
   text-align: center;

@@ -11,14 +11,18 @@ import men_banner from './Components/Assets/banner_mens.png';
 import women_banner from './Components/Assets/banner_women.png';
 import kids_banner from './Components/Assets/banner_kids.png';
 import ShopContextProvider from './Context/ShopContext';
+import { useContext } from 'react';
+import { ShopContext } from './Context/ShopContext';
 
-function App() {
+function AppContent() {
+  const { isAuthenticated } = useContext(ShopContext);
+
   return (
-    <div className="App">
-      <BrowserRouter>
-        <ShopContextProvider>
-          <Navbar />
-          <Routes>
+    <>
+      <Navbar />
+      <Routes>
+        {isAuthenticated ? (
+          <>
             <Route path='/' element={<Shop />} />
             <Route path='/mens' element={<ShopCategory banner={men_banner} category="men" />} />
             <Route path='/womens' element={<ShopCategory banner={women_banner} category="women" />} />
@@ -26,8 +30,22 @@ function App() {
             <Route path='/product/:productId' element={<Product />} />
             <Route path='/cart' element={<Cart />} />
             <Route path='/login' element={<LoginSignup />} />
-          </Routes>
-          <Footer />
+          </>
+        ) : (
+          <Route path='*' element={<LoginSignup />} />
+        )}
+      </Routes>
+      {isAuthenticated && <Footer />}
+    </>
+  );
+}
+
+function App() {
+  return (
+    <div className="App">
+      <BrowserRouter>
+        <ShopContextProvider>
+          <AppContent />
         </ShopContextProvider>
       </BrowserRouter>
     </div>

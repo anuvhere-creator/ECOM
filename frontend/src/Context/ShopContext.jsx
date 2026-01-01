@@ -6,6 +6,61 @@ export const ShopContext = createContext(null);
 
 // Provider component
 const ShopContextProvider = ({ children }) => {
+  // Authentication state
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
+  const [cartCount, setCartCount] = useState(0);
+
+  // Check authentication on mount
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    const storedUser = localStorage.getItem('userData');
+    
+    if (token) {
+      setIsAuthenticated(true);
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      }
+    }
+  }, []);
+
+  // Fetch cart count when user changes
+  useEffect(() => {
+    if (user) {
+      fetchCartCount();
+    } else {
+      setCartCount(0);
+    }
+  }, [user]);
+
+  const fetchCartCount = async () => {
+    try {
+      const response = await fetch(`http://localhost:4000/api/cart/${user.id}`);
+      const data = await response.json();
+      const total = data.items ? data.items.reduce((sum, item) => sum + item.quantity, 0) : 0;
+      setCartCount(total);
+    } catch (error) {
+      console.error("Error fetching cart count:", error);
+      setCartCount(0);
+    }
+  };
+
+  // Login function
+  const login = (token, userData) => {
+    localStorage.setItem('authToken', token);
+    localStorage.setItem('userData', JSON.stringify(userData));
+    setIsAuthenticated(true);
+    setUser(userData);
+  };
+
+  // Logout function
+  const logout = () => {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('userData');
+    setIsAuthenticated(false);
+    setUser(null);
+    setCartCount(0);
+  };
   // Initialize cart from localStorage or default
   const getDefaultCart = () => {
     const savedCart = localStorage.getItem('cartItems');
@@ -101,6 +156,13 @@ const ShopContextProvider = ({ children }) => {
     getTotalCartAmount,
     getTotalCartItems,
     clearCart,
+    // Authentication
+    isAuthenticated,
+    user,
+    login,
+    logout,
+    cartCount,
+    updateCartCount: fetchCartCount,
   };
 
   return <ShopContext.Provider value={contextValue}>{children}</ShopContext.Provider>;

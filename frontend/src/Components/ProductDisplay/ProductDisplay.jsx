@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import './ProductDisplay.css';
 import star_icon from '../Assets/star_icon.png';
 import star_dull_icon from '../Assets/star_dull_icon.png';
@@ -6,7 +6,48 @@ import { ShopContext } from '../../Context/ShopContext';
 
 const ProductDisplay = (props) => {
   const { product } = props;
-  const { addToCart } = useContext(ShopContext);
+  const { addToCart, user, updateCartCount } = useContext(ShopContext);
+  const [selectedSize, setSelectedSize] = useState('M'); // Default size
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupMessage, setPopupMessage] = useState('');
+
+  const addToCartFun = async () => {
+    if (!user) {
+      alert('Please login to add items to cart');
+      return;
+    }
+    try {
+      const response = await fetch("http://localhost:4000/api/cart/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+          
+        },
+        body: JSON.stringify({
+          userId: user.id,
+          product: {
+            productId: product.id,
+            name: product.name,
+            image: product.image,
+            price: product.new_price,
+            size: selectedSize
+          }
+        })
+      });
+      if (response.ok) {
+        setPopupMessage('Item added to cart successfully!');
+        setShowPopup(true);
+        updateCartCount(); // Update cart count in navbar
+      } else {
+        setPopupMessage('Failed to add item to cart. Please try again.');
+        setShowPopup(true);
+      }
+    } catch (error) {
+      setPopupMessage('Error adding item to cart. Please check your connection.');
+      setShowPopup(true);
+    }
+  };
+
 
   return (
     <div className='productdisplay'>
@@ -16,7 +57,7 @@ const ProductDisplay = (props) => {
           <img src={product.image} alt={product.name} />
           <img src={product.image} alt={product.name} />
           <img src={product.image} alt={product.name} />
-          <img src={product.image} alt={product.name} />  
+          <img src={product.image} alt={product.name} />
         </div>
         <div className="productdisplay-img">
           <img className='productdisplay-main-img' src={product.image} alt={product.name} />
@@ -53,17 +94,57 @@ const ProductDisplay = (props) => {
         <div className="productdisplay-right-size">
           <h1 className="productdisplay-right-size-h1">Select Size</h1>
           <div className="productdisplay-right-sizes">
-            <div className="product-right-size-div">S</div>
-            <div className="product-right-size-div">M</div>
-            <div className="product-right-size-div">L</div>
-            <div className="product-right-size-div">XL</div>
-            <div className="product-right-size-div">XXL</div>
+            <div 
+              className={`product-right-size-div ${selectedSize === 'S' ? 'selected' : ''}`} 
+              onClick={() => setSelectedSize('S')}
+            >
+              S
+            </div>
+            <div 
+              className={`product-right-size-div ${selectedSize === 'M' ? 'selected' : ''}`} 
+              onClick={() => setSelectedSize('M')}
+            >
+              M
+            </div>
+            <div 
+              className={`product-right-size-div ${selectedSize === 'L' ? 'selected' : ''}`} 
+              onClick={() => setSelectedSize('L')}
+            >
+              L
+            </div>
+            <div 
+              className={`product-right-size-div ${selectedSize === 'XL' ? 'selected' : ''}`} 
+              onClick={() => setSelectedSize('XL')}
+            >
+              XL
+            </div>
+            <div 
+              className={`product-right-size-div ${selectedSize === 'XXL' ? 'selected' : ''}`} 
+              onClick={() => setSelectedSize('XXL')}
+            >
+              XXL
+            </div>
           </div>
-          <button onClick={() => addToCart(product.id)}>ADD TO CART</button>
+          <button
+            onClick={addToCartFun}
+          >
+            ADD TO CART
+          </button>
+
           <p className='productdisplay-right-category'><span>Category :</span> {product.category}</p>
           <p className='productdisplay-right-category'><span>Tags :</span> {product.tags}</p>
         </div>
       </div>
+
+      {/* Popup Message */}
+      {showPopup && (
+        <div className="popup-overlay">
+          <div className="popup-content">
+            <p>{popupMessage}</p>
+            <button onClick={() => setShowPopup(false)}>OK</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

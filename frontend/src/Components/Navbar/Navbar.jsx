@@ -10,7 +10,8 @@ const Navbar = () => {
   const location = useLocation();
   const [menu, setMenu] = useState("shop");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { getTotalCartItems } = useContext(ShopContext);
+  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+  const { isAuthenticated, logout, user, cartCount } = useContext(ShopContext);
 
   // Update active menu based on current path
   useEffect(() => {
@@ -30,7 +31,31 @@ const Navbar = () => {
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
+    setProfileDropdownOpen(false); // Close profile dropdown when mobile menu opens
   };
+
+  const handleLogout = () => {
+    logout();
+    setMobileMenuOpen(false);
+    setProfileDropdownOpen(false);
+  };
+
+  const toggleProfileDropdown = () => {
+    setProfileDropdownOpen(!profileDropdownOpen);
+    setMobileMenuOpen(false); // Close mobile menu when profile dropdown opens
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (!event.target.closest('.profile-dropdown')) {
+        setProfileDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
     <nav className="navbar">
@@ -43,37 +68,74 @@ const Navbar = () => {
       </div>
 
       {/* Mobile menu toggle */}
-      <div className="mobile-menu-toggle" onClick={toggleMobileMenu}>
-        {mobileMenuOpen ? <FaTimes /> : <FaBars />}
-      </div>
+      {isAuthenticated && (
+        <div className="mobile-menu-toggle" onClick={toggleMobileMenu}>
+          {mobileMenuOpen ? <FaTimes /> : <FaBars />}
+        </div>
+      )}
 
       {/* Middle menu */}
-      <ul className={`nav-menu ${mobileMenuOpen ? 'mobile-active' : ''}`}>
-        {navItems.map((item) => (
-          <li
-            key={item.id}
-            onClick={() => {
-              setMenu(item.id);
-              setMobileMenuOpen(false);
-            }}
-            className={menu === item.id ? "active" : ""}
-          >
-            <Link to={item.path}>{item.label}</Link>
-            {menu === item.id && <hr />}
-          </li>
-        ))}
-      </ul>
+      {isAuthenticated && (
+        <ul className={`nav-menu ${mobileMenuOpen ? 'mobile-active' : ''}`}>
+          {navItems.map((item) => (
+            <li
+              key={item.id}
+              onClick={() => {
+                setMenu(item.id);
+                setMobileMenuOpen(false);
+              }}
+              className={menu === item.id ? "active" : ""}
+            >
+              <Link to={item.path}>{item.label}</Link>
+              {menu === item.id && <hr />}
+            </li>
+          ))}
+        </ul>
+      )}
 
       {/* Right side login & cart */}
       <div className="nav-login-cart">
-        <Link to="/login">
-          <button className="login-btn">Login</button>
-        </Link>
+        {isAuthenticated ? (
+          <>
+            {/* Profile Avatar/Dropdown */}
+            <div className="profile-dropdown">
+              <div className="profile-avatar" onClick={toggleProfileDropdown}>
+                {user?.avatar ? (
+                  <img src={user.avatar} alt="Profile" />
+                ) : (
+                  <span className="avatar-letter">
+                    {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                  </span>
+                )}
+              </div>
+              
+              {profileDropdownOpen && (
+                <div className="profile-menu">
+                  <div className="profile-header">
+                    <h4>Hi {user?.name || 'User'}!</h4>
+                  </div>
+                  <div className="profile-info">
+                    <p className="profile-email">{user?.email}</p>
+                  </div>
+                  <div className="profile-actions">
+                    <button className="logout-btn" onClick={handleLogout}>
+                      Logout
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
 
-        <Link to="/cart" className="cart-wrapper">
-          <img src={cart_icon} alt="Cart" />
-          <span className="nav-cart-count">{getTotalCartItems()}</span>
-        </Link>
+            <Link to="/cart" className="cart-wrapper">
+              <img src={cart_icon} alt="Cart" />
+              <span className="nav-cart-count">{cartCount}</span>
+            </Link>
+          </>
+        ) : (
+          <Link to="/login">
+            <button className="login-btn">Login</button>
+          </Link>
+        )}
       </div>
     </nav>
   );
