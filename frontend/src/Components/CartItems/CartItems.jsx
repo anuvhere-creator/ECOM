@@ -6,6 +6,7 @@ import { FiMinus, FiPlus, FiTrash2 } from "react-icons/fi";
 const CartItems = () => {
   const { user, updateCartCount } = useContext(ShopContext);
   const [cartItems, setCartItems] = useState([]);
+  // const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!user) return;
@@ -14,36 +15,100 @@ const CartItems = () => {
       .then(data => setCartItems(data.items || []));
   }, [user]);
 
-  const addQuantity = (item) => {
-    setCartItems(prev =>
-      prev.map(p =>
-        p.productId === item.productId && p.size === item.size
-          ? { ...p, quantity: p.quantity + 1 }
-          : p
-      )
-    );
-    updateCartCount();
+  const addQuantity = async (item) => {
+    try {
+      const response = await fetch("http://localhost:4000/api/cart/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: user.id,
+          product: {
+            productId: item.productId,
+            name: item.name,
+            image: item.image,
+            price: item.price,
+            size: item.size,
+          },
+        }),
+      });
+      if (response.ok) {
+        // Update local state
+        setCartItems((prev) =>
+          prev.map(cartItem =>
+            cartItem.productId === item.productId && cartItem.size === item.size
+              ? { ...cartItem, quantity: cartItem.quantity + 1 }
+              : cartItem
+          )
+        );
+        updateCartCount();
+      }
+    } catch (error) {
+      console.error("Error adding quantity:", error);
+    }
   };
 
-  const removeQuantity = (productId, size) => {
-    setCartItems(prev =>
-      prev
-        .map(p =>
-          p.productId === productId && p.size === size
-            ? { ...p, quantity: p.quantity - 1 }
-            : p
-        )
-        .filter(p => p.quantity > 0)
-    );
-    updateCartCount();
-  };
+  const removeQuantity = async (productId, size) => {
+    try {
+      const response = await fetch("http://localhost:4000/api/cart/remove", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: user.id,
+          productId,
+          size,
+          quantity: 1,
+        }),
+      });
+      if (response.ok) {
+        // Update local state
+        setCartItems((prev) => {
+          const newItems = prev.map(item => {
+            if (item.productId === productId && item.size === size) {
+              const newQty = item.quantity - 1;
+              if (newQty <= 0) return null;
+              return { ...item, quantity: newQty };
+            }
+            return item;
+          }).filter(item => item !== null);
+          return newItems;
+        });
+        updateCartCount();
+      }
+    } catch (error) {
+      console.error("Error removing quantity:", error);
+    }
+  }
 
-  const removeItem = (productId, size) => {
-    setCartItems(prev =>
-      prev.filter(p => !(p.productId === productId && p.size === size))
-    );
-    updateCartCount();
-  };
+  const removeItem = async (productId, size) => {
+    const item = cartItems.find(item => item.productId === productId && item.size === size);
+    if (!item) return;
+
+    try {
+      const response = await fetch("http://localhost:4000/api/cart/remove", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: user.id,
+          productId,
+          size,
+          quantity: item.quantity,
+        }),
+      });
+      if (response.ok) {
+        // Update local state
+        setCartItems((prev) => prev.filter(item => !(item.productId === productId && item.size === size)));
+        updateCartCount();
+      }
+    } catch (error) {
+      console.error("Error removing item:", error);
+    }
+  }
 
   const totalAmount = cartItems.reduce(
     (sum, i) => sum + i.price * i.quantity,
@@ -96,23 +161,12 @@ const CartItems = () => {
               <div>
                 <span>Qty</span>
                 <div className="qty">
-                  <button
-                    className="qty-btn"
-                    onClick={() => removeQuantity(item.productId, item.size)}
-                    aria-label="Decrease quantity"
-                  >
-                    <FiMinus />
-                  </button>
+
+
+                  <button className="qty-btn minus" onClick={() => removeQuantity(item.productId, item.size)}>−</button>
 
                   <span className="qty-value">{item.quantity}</span>
-
-                  <button
-                    className="qty-btn"
-                    onClick={() => addQuantity(item)}
-                    aria-label="Increase quantity"
-                  >
-                    <FiPlus />
-                  </button>
+                  <button className="qty-btn plus" onClick={() => addQuantity(item)}>+</button>
                 </div>
 
               </div>
@@ -129,23 +183,12 @@ const CartItems = () => {
           <div className="desktop-size">{item.size}</div>
 
           <div className="qty">
-            <button
-              className="qty-btn"
-              onClick={() => removeQuantity(item.productId, item.size)}
-              aria-label="Decrease quantity"
-            >
-              <FiMinus />
-            </button>
+            <button className="qty-btn minus" onClick={() => removeQuantity(item.productId, item.size)}>−</button>
+
 
             <span className="qty-value">{item.quantity}</span>
 
-            <button
-              className="qty-btn"
-              onClick={() => addQuantity(item)}
-              aria-label="Increase quantity"
-            >
-              <FiPlus />
-            </button>
+            <button className="qty-btn plus" onClick={() => addQuantity(item)}>+</button>
           </div>
 
 
