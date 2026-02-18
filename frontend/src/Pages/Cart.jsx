@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import './CSS/Cart.css'
+// import './CSS/Cart.css'
 import { ShopContext } from '../Context/ShopContext'
 import CartItems from '../Components/CartItems/CartItems'
 import SEOMetaTags from '../Components/SEO/SEOMetaTags'

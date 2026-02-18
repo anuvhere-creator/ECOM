@@ -1,9 +1,12 @@
 /* ===== Hero Section ===== */
 .hero {
-  height: 100vh;
+  min-height: 100vh; /* ✅ FIX: allow hero to grow */
   background: linear-gradient(180deg, #fde1ff, #e1ffea22 60%);
   display: flex;
   flex-wrap: wrap;
+  padding-bottom: 80px; /* ✅ space before next section */
+  box-sizing: border-box;
+  overflow: hidden; /* ✅ prevent visual spill */
 }
 
 /* ===== Left Section ===== */
@@ -80,6 +83,7 @@
 .hero-right img {
   width: 500px;
   max-width: 100%;
+  height: auto;
 }
 
 /* ====== Animations ====== */
@@ -111,7 +115,9 @@
 .delay-300 { animation-delay: 0.3s; }
 .delay-400 { animation-delay: 0.4s; }
 .delay-500 { animation-delay: 0.5s; }
-
+.resp{
+  margin:0;
+}
 /* Keyframes */
 @keyframes slideLeft {
   to {
@@ -141,6 +147,23 @@
 }
 
 /* ===== Responsive Design ===== */
+
+/* Large screens (≥1400px) */
+@media (min-width: 1400px) {
+  .hero-left {
+    padding-left: 220px;
+  }
+
+  .hero-left p {
+    font-size: 110px;
+  }
+
+  .hero-right img {
+    width: 550px;
+  }
+}
+
+/* Laptops & Tablets */
 @media (max-width: 1024px) {
   .hero-left {
     padding-left: 100px;
@@ -161,12 +184,12 @@
   }
 }
 
+/* Tablets & Mobiles */
 @media (max-width: 768px) {
   .hero {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: auto;
     padding: 50px 20px;
     text-align: center;
   }
@@ -193,5 +216,58 @@
   .hero-right img {
     width: 80%;
     max-width: 350px;
+  }
+}
+
+/* Small Mobiles */
+@media (max-width: 480px) {
+  .hero {
+    padding: 40px 15px;
+  }
+
+  .hero-left h2 {
+    font-size: 16px;
+    letter-spacing: 1px;
+  }
+
+  .hero-left p {
+    font-size: 36px;
+  }
+
+  .hero-hand-icon {
+    gap: 10px;
+  }
+
+  .hero-hand-icon img {
+    width: 55px;
+  }
+
+  .hero-latest-btn {
+    width: 200px;
+    height: 50px;
+    font-size: 14px;
+    gap: 10px;
+  }
+
+  .hero-latest-btn img {
+    width: 18px;
+  }
+
+  .hero-right img {
+    width: 90%;
+    max-width: 280px;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 360px) {
+  .hero-left p {
+    font-size: 30px;
+  }
+
+  .hero-latest-btn {
+    width: 180px;
+    height: 46px;
+    font-size: 13px;
   }
 }

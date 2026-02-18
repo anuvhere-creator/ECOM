@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import './Item.css'
 
 const Item = (props) => {
+  // console.log("producst",props);
   return (
     <div className='item animate-fade-in hover-lift'>
       <Link to={`/product/${props.id}`}>

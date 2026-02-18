@@ -4,6 +4,7 @@ import new_collections from '../Assets/new_collections'
 import Item from '../Item/Item'  
 
 const NewCollections = () => {
+  console.log("new collections",new_collections);
   return (
     <div className='new-collections'>
       <h1>New Collections</h1>

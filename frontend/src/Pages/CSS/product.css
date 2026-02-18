@@ -1,0 +1,12 @@
+/* ===== PRODUCT PAGE FLOW FIX ===== */
+.product-page {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* Each section must create height */
+.product-section {
+  width: 100%;
+  display: block;
+}

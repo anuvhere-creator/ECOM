@@ -1,8 +1,14 @@
 .productdisplay {
-    display: flex;
-    margin: 0px 170px;
-    flex-wrap: wrap;
+  display: flex;
+  gap: 40px;
+
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 16px;
+
+  flex-wrap: wrap;
 }
+
 
 .productdisplay-left {
     display: flex;
@@ -30,12 +36,12 @@
 }
 
 .productdisplay-right {
-    margin: 0px 70px;
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 300px;
 }
+
 
 .productdisplay-right h1 {
   color: #3d3d3d;

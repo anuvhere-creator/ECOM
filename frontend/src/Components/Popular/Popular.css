@@ -2,11 +2,16 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
-    min-height: 90vh;
-    padding: 20px;
+    gap: 20px;
+
+    /* IMPORTANT: natural flow */
+    padding: 80px 20px 60px;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
+/* Heading (if you add later, already safe) */
 .popular h1 {
     color: #171717;
     font-size: 50px;
@@ -14,61 +19,91 @@
     text-align: center;
 }
 
+/* Divider */
 .popular hr {
     width: 200px;
     height: 6px;
     border-radius: 10px;
     background: #252525;
+    border: none;
 }
 
+/* Product grid */
 .popular-item {
     margin-top: 50px;
     display: flex;
     gap: 30px;
     flex-wrap: wrap;
     justify-content: center;
+
+    /* Prevent overflow */
+    width: 100%;
+    max-width: 1200px;
+}
+.popular-item .item {
+    width: 260px;          /* ✅ allows horizontal layout */
 }
 
-/* Responsive styles */
+/* ================= RESPONSIVE ================= */
+
+/* Large screens */
 @media (max-width: 1280px) {
     .popular h1 {
         font-size: 42px;
     }
+
+    .popular-item {
+        max-width: 1000px;
+    }
 }
 
+/* Laptop */
 @media (max-width: 1024px) {
+    .popular {
+        padding: 70px 20px 50px;
+    }
+
     .popular h1 {
         font-size: 36px;
     }
 }
 
+/* Tablet */
 @media (max-width: 768px) {
     .popular {
-        padding: 15px;
+        padding: 60px 15px 40px;
     }
-    
+
     .popular h1 {
         font-size: 32px;
     }
-    
+
     .popular hr {
         width: 150px;
         height: 5px;
     }
+
+    .popular-item {
+        gap: 20px;
+    }
 }
 
+/* Mobile */
 @media (max-width: 480px) {
     .popular {
-        padding: 10px;
+        padding: 50px 10px 30px;
     }
-    
+
     .popular h1 {
         font-size: 28px;
     }
-    
+
     .popular hr {
         width: 120px;
         height: 4px;
     }
-}
 
+    .popular-item {
+        gap: 16px;
+    }
+}

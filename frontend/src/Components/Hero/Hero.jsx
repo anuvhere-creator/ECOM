@@ -12,10 +12,10 @@ const Hero = () => {
         <h2 className="animate-slide-left">NEW ARRIVALS ONLY</h2>
         <div>
           <div className="hero-hand-icon animate-slide-left delay-200">
-            <p>new</p>
+            <p className="resp">new</p>
             <img src={hand_icon} alt="hand icon" />
           </div>
-          <p className="animate-slide-left delay-300">collections</p>
+          <p className="resp animate-slide-left delay-300">collections</p>
           <p className="animate-slide-left delay-400">for everyone</p>
         </div>
         <Link to="/shop" className="hero-latest-btn animate-slide-up delay-500 hover-lift">
